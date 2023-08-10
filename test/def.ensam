@@ -1,0 +1,19 @@
+Inicio sección text {
+    Defino global _start.
+}.
+
+Inicio bloque _start {
+    Asigno registro EDX como longitud.
+    Asigno registro ECX como mensaje.
+    Asigno registro EBX como 1.
+    Asigno registro EAX como 4. // opcode: sys_write
+    Interrumpo con 0x80.
+    Asigno registro EBX como 0.
+    Asigno registro EAX como 1.
+    Interrumpo con 0x80.
+}.
+
+Inicio sección .data {
+    Defino byte mensaje como "Hello world", 10.
+    Simbolizo longitud como $ - mensaje.
+}.
