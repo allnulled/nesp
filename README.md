@@ -12,7 +12,7 @@ Por entender mejor el bajo nivel.
 
 ## Bueno. ¿Y cómo se usa?
 
-Buf. Problemas. Lo he intentado dejar en los `/bin/{ compile | execute }.{ bat | sh }. Pero de momento solo me he preocupado por el `sh`. Porque bueno, como todo estos proyectos que hago, nacen, viven, y mueren en mí. Así que... linux, y gou.
+Buf. Problemas. Lo he intentado dejar en los `/bin/{ compile | execute }.{ bat | sh }`. Pero de momento solo me he preocupado por el `sh`. Porque bueno, como todo estos proyectos que hago, nacen, viven, y mueren en mí. Así que... linux, y gou.
 
 ## Que cómo se usa
 
