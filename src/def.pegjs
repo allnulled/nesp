@@ -4,7 +4,8 @@ Lenguage = Bloque
  /* LENGUAJE */
 /************/
 
-Bloque = _* Sentencia* _*
+Bloque = _* sentencias:Sentencia* _* 
+    { return sentencias }
 Bloque_en_parentesis = 
   token1:OPEN_CURLY_BRACKETS
   bloque:Bloque
@@ -23,6 +24,9 @@ Sentencia_completa = sentencia:(
   Sentencia_de_asigno /
   Sentencia_de_interrumpo /
   Sentencia_de_simbolizo /
+  Sentencia_de_salto_a /
+  Sentencia_de_llamo_a /
+  Sentencia_de_retorno /
   Sentencia_de_defino_byte )
     { return sentencia }
   
@@ -31,7 +35,21 @@ Sentencia_de_inicio_seccion =
   etiqueta:Etiqueta_prebloque
   bloque:Bloque_en_parentesis
   token4:(EOS _*)
-    { return etiqueta }
+    { return { sentencia: "inicio sección", etiqueta, bloque } }
+
+Sentencia_de_llamo_a = 
+  token1:(_* "Llamo a" _+)
+  etiqueta:Etiqueta_normal
+    { return { sentencia: "inicio llamo a", etiqueta } }
+
+Sentencia_de_salto_a = 
+  token1:(_* "Salto a" _+)
+  etiqueta:Etiqueta_normal
+    { return { sentencia: "salto a", etiqueta } }
+
+Sentencia_de_retorno = 
+  token1:(_* "Retorno" )
+    { return { sentencia: "retorno", retorno: null } }
 
 Sentencia_de_simbolizo = 
 token1:(_* "Simbolizo" _+)
@@ -39,7 +57,7 @@ token1:(_* "Simbolizo" _+)
   token2:(_+ "como" _+)
   conjunto:Expresion_de_valor
   token3:(EOS _*)
-    { return etiqueta }
+    { return { sentencia: "simbolizo como", etiqueta, conjunto } }
 
 Sentencia_de_defino_byte = 
   token1:(_* "Defino byte" _+)
@@ -47,20 +65,20 @@ Sentencia_de_defino_byte =
   token2:(_+ "como" _+)
   conjunto:Conjunto_de_valores_seguidos
   token3:(EOS _*)
-    { return etiqueta }
+    { return { sentencia: "defino byte como", etiqueta, conjunto } }
 
 Sentencia_de_inicio_bloque = 
   token1:(_* "Inicio bloque" _+)
   etiqueta:Etiqueta_prebloque
   bloque:Bloque_en_parentesis
   token4:(EOS _*)
-    { return etiqueta }
+    { return { sentencia: "inicio bloque", etiqueta, bloque } }
 
 Sentencia_de_defino_global = 
   token1:(_* "Defino global" _+)
   etiqueta:Etiqueta_prepunto
   token2:(EOS _*)
-    { return etiqueta }
+    { return { sentencia: "defino global", etiqueta } }
 
 Sentencia_de_asigno =
   token1:(_* "Asigno" _+)
@@ -68,13 +86,13 @@ Sentencia_de_asigno =
   token2:(_+ "como" _+)
   destino:Referencia_a_valor
   token3:(EOS _*)
-    { return { origen, destino } }
+    { return { sentencia: "asigno registro como", origen, destino } }
 
 Sentencia_de_interrumpo =
   token1:(_* "Interrumpo con" _+)
   referencia:Referencia_a_valor
   token2:(EOS _*)
-    { return referencia }
+    { return { sentencia: "interrumpo", referencia } }
 
 Nombre_de_variable = Referencia_a_valor_de_variable
 
@@ -134,17 +152,19 @@ Operaciones_a_valor =
     { return { operador, operante } }
 
 Etiqueta_prebloque = ((!("{")).)+
-     { return text() }
+    { return text() }
 Etiqueta_prepunto = ((!(".")).)+
-     { return text() }
+    { return text() }
+Etiqueta_normal = [A-Za-z_] [A-Za-z0-9_]*
+    { return text() }
 
   /*********************/
  /* TOKENS ESPECIALES */
 /*********************/
 
-_ = (__ / ___ / Comentarios) {}
-__ = ("\r" / "\n") {}
-___ = ("\t" / " ") {}
+_ = (__ / ___ / Comentarios) 
+__ = ("\r" / "\n") 
+___ = ("\t" / " ") 
 
 OPEN_CURLY_BRACKETS = _* "{" _*
 CLOSE_CURLY_BRACKETS = _* "}" _*
@@ -156,12 +176,12 @@ Comentarios = comentario:(
   Comentario_multilinea )
     { return comentario }
 
-Comentario_unilinea = "//" (!(EOL).)* EOL*
-Comentario_multilinea = "/*" (!("*/").)* "*/"
+Comentario_unilinea = "//" (!(EOL).)* EOL* { return text() }
+Comentario_multilinea = "/*" (!("*/").)* "*/" { return text() }
 
 TOKEN_DE_REGISTRO = registro:(
   TOKEN_DE_REGISTRO_DE_CPU
   / TOKEN_DE_REGISTRO_DE_PUNTERO )
     { return registro }  
-TOKEN_DE_REGISTRO_DE_PUNTERO = ("0x" / "0X") [0-9]
-TOKEN_DE_REGISTRO_DE_CPU = [A-Za-z]*
+TOKEN_DE_REGISTRO_DE_PUNTERO = ("0x" / "0X") [0-9] { return text() }
+TOKEN_DE_REGISTRO_DE_CPU = [A-Za-z]* { return text() }

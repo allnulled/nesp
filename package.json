@@ -1,0 +1,16 @@
+{
+  "name": "doing",
+  "version": "1.0.0",
+  "description": "OLPE, Otro Lenguaje Para Ensamblador.",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "build": "pegjs -o src/def.js src/def.pegjs",
+    "test": "npm run build && node test"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
