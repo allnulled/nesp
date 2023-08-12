@@ -7,8 +7,9 @@
     "test": "test"
   },
   "scripts": {
-    "build": "pegjs -o src/def.js src/def.pegjs",
-    "test": "npm run build && node test"
+    "build": "pegjs -o src/olpe.parser.js src/olpe.parser.pegjs",
+    "test:api": "npm run build && node test/api",
+    "test:bin": "npm run build && node test/bin"
   },
   "keywords": [],
   "author": "",
